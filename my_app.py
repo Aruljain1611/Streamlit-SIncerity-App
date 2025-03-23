@@ -1,6 +1,7 @@
 import streamlit as st
 import pickle
 import tensorflow as tf
+import numpy as np
 
 
 
@@ -52,6 +53,8 @@ if st.button("Continue"):
         sentence_list = [sentence]
         tokenized_sentence = tokenizer.texts_to_sequences(sentence_list)
         padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post")
+        padded_sequence = padded_sequence.astype(np.float32)
+
         dataset = tf.data.Dataset.from_tensor_slices(padded_sequence)
         dataset = dataset.batch(1)
         st.session_state.prediction = predict(model,dataset)  # Store prediction in session state
