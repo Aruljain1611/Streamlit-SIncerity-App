@@ -3,4 +3,4 @@ tensorflow
 tflite-runtime
 numpy
 pickle-mixin
-python
+python=3.10
