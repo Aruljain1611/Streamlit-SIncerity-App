@@ -1,7 +1,3 @@
-Sure! Here's a GitHub README template based on the project description and Streamlit code you provided:
-
----
-
 # Streamlit-Sincerity-App: Text Classification with TensorFlow
 
 ## Project Overview
