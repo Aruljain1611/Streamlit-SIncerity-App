@@ -18,12 +18,12 @@ def predict(interpreter, sentence):
     padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post")
     padded_sequence = padded_sequence.astype(np.float32)
 
-    dataset = tf.data.Dataset.from_tensor_slices(padded_sequence)
-    dataset = dataset.batch(1)
+    # dataset = tf.data.Dataset.from_tensor_slices(padded_sequence)
+    # dataset = dataset.batch(1)
     # Get input and output tensors
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-    dataset = np.array(dataset, dtype= np.float32)
+    dataset = np.array(padded_sequence, dtype= np.float32)
 
     # Set the input tensor
     interpreter.set_tensor(input_details[0]['index'], dataset)
