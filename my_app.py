@@ -15,7 +15,7 @@ def load_model(model_path):
 def predict(interpreter, sentence):
     sentence_list = [sentence]
     tokenized_sentence = tokenizer.texts_to_sequences(sentence_list)
-    padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post")
+    padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post", maxlen = 63)
     padded_sequence = padded_sequence.astype(np.float32)
 
     # dataset = tf.data.Dataset.from_tensor_slices(padded_sequence)
