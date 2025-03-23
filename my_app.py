@@ -50,7 +50,7 @@ if st.button("Continue"):
     if sentence:
         sentence_list = [sentence]
         tokenized_sentence = tokenizer.texts_to_sequences(sentence_list)
-        padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post")
+        padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post", maxlen=63)
         st.session_state.prediction = predict(model, padded_sequence)
     else:
         st.write("Please enter a sentence.")
