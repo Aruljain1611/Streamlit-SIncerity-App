@@ -93,9 +93,3 @@ This project demonstrates the power of deep learning for natural language proces
 - Streamlit for building interactive applications.
 
 ---
-
-## License
-
---
-
----
