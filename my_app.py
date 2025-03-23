@@ -2,38 +2,27 @@ import streamlit as st
 import pickle
 import tensorflow as tf
 import numpy as np
-import tflite_runtime.interpreter as tflite
-
-
 
 # Load the TFLite model
 def load_model(model_path):
-    interpreter = tflite.Interpreter(model_path=model_path)
+    interpreter = tf.lite.Interpreter(model_path=model_path)
     interpreter.allocate_tensors()
     return interpreter
 
 # Function to perform inference
-def predict(interpreter, sentence):
-    sentence_list = [sentence]
-    tokenized_sentence = tokenizer.texts_to_sequences(sentence_list)
-    padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post", maxlen = 63)
-    padded_sequence = padded_sequence.astype(np.float32)
-
-    # dataset = tf.data.Dataset.from_tensor_slices(padded_sequence)
-    # dataset = dataset.batch(1)
+def predict(interpreter, input_data):
     # Get input and output tensors
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
-    dataset = np.array(padded_sequence, dtype= np.float32)
 
     # Set the input tensor
-    interpreter.set_tensor(input_details[0]['index'], dataset)
+    interpreter.set_tensor(input_details[0]['index'], input_data.astype(np.float32))
 
     # Run inference
     interpreter.invoke()
 
     # Get the output tensor
-    output_data = interpreter.get_tensor(output_details[0]['index'])
+    output_data = interpreter.get_tensor(output_details[0]['index'])[0][0]
 
     return output_data
 
@@ -43,7 +32,7 @@ try:
         tokenizer = pickle.load(handle)
     model = load_model("model_with_custom_ops.tflite")
 except FileNotFoundError:
-    st.error("Tokenizer or model file not found. Please ensure 'tokenizer.pickle' and 'text_classifier.keras' are in the correct directory.")
+    st.error("Tokenizer or model file not found. Please ensure 'tokenizer.pickle' and 'model_with_custom_ops.tflite' are in the correct directory.")
     st.stop()
 
 # Initialize session state
@@ -59,7 +48,10 @@ threshold = st.slider("Select the threshold for sincerity", min_value=0.0, max_v
 
 if st.button("Continue"):
     if sentence:
-        st.session_state.prediction = predict(model,sentence)  # Store prediction in session state
+        sentence_list = [sentence]
+        tokenized_sentence = tokenizer.texts_to_sequences(sentence_list)
+        padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post")
+        st.session_state.prediction = predict(model, padded_sequence)
     else:
         st.write("Please enter a sentence.")
 
@@ -69,4 +61,3 @@ if st.session_state.prediction is not None:
         st.write("## The sentence was insincere")
     else:
         st.write("## The sentence was sincere")
-
