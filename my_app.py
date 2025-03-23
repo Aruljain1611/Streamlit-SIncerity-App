@@ -12,13 +12,20 @@ def load_model(model_path):
     return interpreter
 
 # Function to perform inference
-def predict(interpreter, input_data):
+def predict(interpreter, sentence):
+    sentence_list = [sentence]
+    tokenized_sentence = tokenizer.texts_to_sequences(sentence_list)
+    padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post")
+    padded_sequence = padded_sequence.astype(np.float32)
+
+    dataset = tf.data.Dataset.from_tensor_slices(padded_sequence)
+    dataset = dataset.batch(1)
     # Get input and output tensors
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
 
     # Set the input tensor
-    interpreter.set_tensor(input_details[0]['index'], input_data)
+    interpreter.set_tensor(input_details[0]['index'], dataset)
 
     # Run inference
     interpreter.invoke()
@@ -50,14 +57,7 @@ threshold = st.slider("Select the threshold for sincerity", min_value=0.0, max_v
 
 if st.button("Continue"):
     if sentence:
-        sentence_list = [sentence]
-        tokenized_sentence = tokenizer.texts_to_sequences(sentence_list)
-        padded_sequence = tf.keras.preprocessing.sequence.pad_sequences(tokenized_sentence, padding="post")
-        padded_sequence = padded_sequence.astype(np.float32)
-
-        dataset = tf.data.Dataset.from_tensor_slices(padded_sequence)
-        dataset = dataset.batch(1)
-        st.session_state.prediction = predict(model,dataset)  # Store prediction in session state
+        st.session_state.prediction = predict(model,sentence)  # Store prediction in session state
     else:
         st.write("Please enter a sentence.")
 
