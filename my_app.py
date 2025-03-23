@@ -23,6 +23,7 @@ def predict(interpreter, sentence):
     # Get input and output tensors
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
+    dataset = np.array(dataset, dtype= np.float32)
 
     # Set the input tensor
     interpreter.set_tensor(input_details[0]['index'], dataset)
