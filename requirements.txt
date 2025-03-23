@@ -1,5 +1,4 @@
 streamlit
 tensorflow
-tflite-runtime
 numpy
 pickle-mixin
